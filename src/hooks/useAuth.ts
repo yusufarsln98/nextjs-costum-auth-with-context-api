@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import axios, { AxiosError } from 'axios';
-import { UserResponse, AuthAction } from '@/types/user';
+import { UserResponse, AuthAction, Message } from '@/types/user';
 
 export const useAuth = (): [
   user: UserResponse | null,
@@ -14,6 +14,7 @@ export const useAuth = (): [
   const [user, setUser] = useState<UserResponse | null>(null);
   const baseURL = process.env.NEXT_PUBLIC_API_URL;
   const router = useRouter();
+  const pathname = usePathname();
 
   const axiosInstance = axios.create({
     baseURL,
@@ -31,42 +32,40 @@ export const useAuth = (): [
     return config;
   });
 
-  // axiosInstance.interceptors.response.use(
-  //   (response) => {
-  //     return response;
-  //   },
-  //   (error) => {
-  //     if (error.response.status === 401) {
-  //       console.log(error.response.data);
-  //       localStorage.removeItem('user');
-  //       setUser(null);
-  //       router.push('/login');
-  //     }
-  //     return Promise.reject(error);
-  //   },
-  // );
-
+  // set user from local storage
   useEffect(() => {
-    const storedUser = localStorage?.getItem('user');
+    const storedUser = localStorage.getItem('user');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     } else {
       setUser(null);
-      router.push('/login');
     }
-  }, [router]);
+  }, []);
 
-  const login: AuthAction = async (user, setShowAlert) => {
+  // if user is not logged in, redirect to login page
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser && pathname !== '/login' && pathname !== '/signUp') {
+      router.push('/login');
+    } else if (
+      storedUser &&
+      (pathname === '/login' || pathname === '/signUp')
+    ) {
+      router.push('/');
+    }
+  }, [user, router, pathname]);
+
+  const login: AuthAction = async (user, setErrorAlert, setErrorMessage) => {
     try {
       const response = await axiosInstance.post('/login', user);
       const userResponse: UserResponse = response.data.user;
       localStorage.setItem('user', JSON.stringify(userResponse));
       setUser(userResponse);
-      setShowAlert(false);
       router.push('/');
     } catch (error: AxiosError | any) {
       console.log((error as AxiosError)?.response?.data);
-      setShowAlert(true);
+      setErrorMessage(error?.response?.data as Message);
+      setErrorAlert(true);
     }
   };
 
@@ -76,15 +75,17 @@ export const useAuth = (): [
     router.push('/login');
   };
 
-  const signUp: AuthAction = async (user, setShowAlert) => {
+  const signUp: AuthAction = async (user, setErrorAlert, setErrorMessage) => {
     try {
       const response = await axios.post(`${baseURL}/signup`, user);
       const userResponse: UserResponse = response.data.user;
       localStorage.setItem('user', JSON.stringify(userResponse));
       setUser(userResponse);
       router.push('/');
-    } catch (error) {
-      console.error('Signup error:', error);
+    } catch (error: AxiosError | any) {
+      console.error((error as AxiosError)?.response?.data);
+      setErrorAlert(true);
+      setErrorMessage(error?.response?.data as Message);
     }
   };
 
