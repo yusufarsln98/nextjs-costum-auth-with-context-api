@@ -13,7 +13,6 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { AuthContext, Message } from '@/types/user';
 import ErrorAlert from '@/components/ErrorAlert';
-import { useRouter } from 'next/navigation';
 
 const Copyright = (props: any) => {
   return (
@@ -39,8 +38,6 @@ export default function Page() {
   const [errorMessage, setErrorMessage] = React.useState<Message>({
     message: '',
   });
-
-  const router = useRouter();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -118,7 +115,7 @@ export default function Page() {
               Login
             </Button>
             <Grid item>
-              <Link href='/signUp' variant='body2'>
+              <Link href='/sign-up' variant='body2'>
                 {"Don't have an account? Sign Up"}
               </Link>
             </Grid>
