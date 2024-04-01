@@ -10,10 +10,14 @@ export type User = {
 
 export type UserCredentials = Pick<User, 'username' | 'password'>;
 export type UserResponse = Pick<User, 'id' | 'username' | 'role' | 'token'>;
+export type Message = {
+  message: string;
+};
 
 export type AuthAction = (
   newUser: UserCredentials,
-  setShowAlert: React.Dispatch<React.SetStateAction<boolean>>,
+  setErrorAlert: React.Dispatch<React.SetStateAction<boolean>>,
+  setErrorMessage: React.Dispatch<React.SetStateAction<Message>>,
 ) => Promise<void>;
 
 export const AuthContext = React.createContext<{
@@ -23,6 +27,8 @@ export const AuthContext = React.createContext<{
   logout: () => void;
   errorAlert: boolean;
   setErrorAlert: React.Dispatch<React.SetStateAction<boolean>>;
+  errorMessage: Message;
+  setErrorMessage: React.Dispatch<React.SetStateAction<Message>>;
 }>({
   user: null,
   login: async () => {},
@@ -30,4 +36,6 @@ export const AuthContext = React.createContext<{
   logout: () => {},
   errorAlert: false,
   setErrorAlert: () => {},
+  errorMessage: { message: '' },
+  setErrorMessage: () => {},
 });
