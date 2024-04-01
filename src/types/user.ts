@@ -25,17 +25,9 @@ export const AuthContext = React.createContext<{
   login: AuthAction;
   signUp: AuthAction;
   logout: () => void;
-  errorAlert: boolean;
-  setErrorAlert: React.Dispatch<React.SetStateAction<boolean>>;
-  errorMessage: Message;
-  setErrorMessage: React.Dispatch<React.SetStateAction<Message>>;
 }>({
   user: null,
   login: async () => {},
   signUp: async () => {},
   logout: () => {},
-  errorAlert: false,
-  setErrorAlert: () => {},
-  errorMessage: { message: '' },
-  setErrorMessage: () => {},
 });

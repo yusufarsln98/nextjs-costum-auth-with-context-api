@@ -11,11 +11,11 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { AuthContext } from '@/types/user';
+import { AuthContext, Message } from '@/types/user';
 import ErrorAlert from '@/components/ErrorAlert';
 import { useRouter } from 'next/navigation';
 
-function Copyright(props: any) {
+const Copyright = (props: any) => {
   return (
     <Typography
       variant='body2'
@@ -31,10 +31,15 @@ function Copyright(props: any) {
       {'.'}
     </Typography>
   );
-}
+};
 
 export default function Page() {
-  const { user, login, errorAlert, setErrorAlert } = useContext(AuthContext);
+  const { login } = useContext(AuthContext);
+  const [errorAlert, setErrorAlert] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState<Message>({
+    message: '',
+  });
+
   const router = useRouter();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -46,18 +51,17 @@ export default function Page() {
         password: data.get('password') as string,
       },
       setErrorAlert,
+      setErrorMessage,
     );
   };
 
-  if (user) {
-    router.push('/');
-  }
+  console.log(errorAlert, errorMessage);
 
   return (
     <>
       {errorAlert && (
         <ErrorAlert
-          message='Invalid username or password'
+          message={errorMessage?.message}
           onClose={() => {
             setErrorAlert(false);
           }}
@@ -114,7 +118,7 @@ export default function Page() {
               Login
             </Button>
             <Grid item>
-              <Link href='#' variant='body2'>
+              <Link href='/signUp' variant='body2'>
                 {"Don't have an account? Sign Up"}
               </Link>
             </Grid>
