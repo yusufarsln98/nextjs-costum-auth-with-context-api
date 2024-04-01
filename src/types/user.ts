@@ -4,11 +4,12 @@ export type User = {
   id: number;
   username: string;
   password?: string;
+  name?: string;
   token?: string;
   role: string;
 };
 
-export type UserCredentials = Pick<User, 'username' | 'password'>;
+export type UserCredentials = Pick<User, 'username' | 'password' | 'name'>;
 export type UserResponse = Pick<User, 'id' | 'username' | 'role' | 'token'>;
 export type Message = {
   message: string;
